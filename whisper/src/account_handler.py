@@ -102,7 +102,7 @@ def register_account(debug):
         print(Fore.GREEN + "Unique ID is " + accid)
         print(Fore.GREEN + "attempting to add account to csv now...")
 
-    if csv_handler.new_entry(accid, user_name, hashed_pass, p_salt):
+    if not csv_handler.new_entry(accid, user_name, hashed_pass, p_salt):
         print(Fore.RED + "Username already exists!")
         return False
     else:
