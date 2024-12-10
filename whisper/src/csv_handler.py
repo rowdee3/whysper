@@ -1,5 +1,6 @@
 import csv
 import pandas as pd
+from debug_messages import print_debug
 
 def create_accounts_csv():
 
@@ -45,6 +46,8 @@ def check_if_username_exists(username):
 
 def check_if_accid_exists(accid):
 
+    #needs some work
+
     df = pd.read_csv('../data/accounts.csv')
     accids = df['accid']
 
@@ -75,16 +78,11 @@ def new_entry(accid, username, hpass, salt):
     bool
         if the file succeeds in creating the new account a True is returned otherwise, False.
     """
-
-
-    if check_if_username_exists(username):
-        return False
-    else:
-        row = [accid, username, hpass.hex(), salt]
-        with open('../data/accounts.csv', 'a') as file:
-            writer = csv.writer(file)
-            writer.writerow(row)
-        return True
+    row = [accid, username, hpass.hex(), salt]
+    with open('../data/accounts.csv', 'a') as file:
+        writer = csv.writer(file)
+        writer.writerow(row)
+    return True
 
 
 

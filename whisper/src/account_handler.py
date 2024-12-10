@@ -1,6 +1,7 @@
 import random
 import hasher
 import csv_handler
+from debug_messages import print_debug
 from os.path import exists
 from colorama import Fore, Style, init #type : ignore
 from string import digits
@@ -30,9 +31,9 @@ def register_account(debug):
     file_exists = exists("../data/accounts.csv")
     if file_exists:
         if debug:
-            print(Fore.GREEN + "csv file found!")
+            print_debug(False, "'accounts.csv' found.")
     else:
-        print(Fore.RED + "csv NOT FOUND!\nPlease restart Whisper to generate a new data folder.")
+        print_debug(True, "'accounts.csv' has been moved or is missing. Please restart Whisper to generate a new file.")
         return False
 
     #make a unique account id for this account.
@@ -46,31 +47,19 @@ def register_account(debug):
 
         if csv_handler.check_if_accid_exists(accid):
             if debug:
-                print(Fore.GREEN + "unique account id created.")
+                print_debug(False, "Unique account ID created.")
             accid_is_unique = True
 
+    username_confirmed = False
 
-    user_name = input("@; Please enter a new username: ")
+    while not username_confirmed:
 
-    while True:
+        user_name = input("@; Please enter a username: ")
 
-        pass_meets_spec = False
-
-        while not pass_meets_spec:
-
-            pass_word = input("@' Please enter a password: ")
-            pass_conf = input("@; Please re-enter your password: ")
-
-            if pass_word != pass_conf:
-                print(Fore.RED + "Passwords do not match!")
-            else:  
-                if pass_conf.__len__() <= 12:
-                    print(Fore.RED + "Password length must be or exceed 12 characters.")
-                else:
-                    username_confirmed = False
-                    pass_meets_spec = True
-
-        while not username_confirmed:
+        if csv_handler.check_if_username_exists(user_name):
+            print(Fore.RED + "Username already exists!")
+        else:
+            username_confirmed = True
 
             try:
                 u_input = str(input("@; Are you sure you want " + Fore.BLUE + user_name + Fore.WHITE +" to be your username? (Y/N) "))
@@ -85,25 +74,40 @@ def register_account(debug):
 
                     case _:
                         raise ValueError
-                            
+                                
             except ValueError:
                 print(Fore.RED + "Please enter either Y or N.")
 
-        break
+
+
+    pass_meets_spec = False
+
+    while not pass_meets_spec:
+
+        pass_word = input("@' Please enter a password: ")
+        pass_conf = input("@; Please re-enter your password: ")
+
+        if pass_word != pass_conf:
+            print(Fore.RED + "Passwords do not match!")
+        else:  
+            if pass_conf.__len__() <= 12:
+                print(Fore.RED + "Password length must be or exceed 12 characters.")
+            else:
+                username_confirmed = False
+                pass_meets_spec = True
+
+
 
     if debug:
-        print(Fore.GREEN + "Username confirmed.")
-        print(Fore.GREEN + "Passwords match, hashing...")
+        print_debug(False, "Username confirmed.")
+        print_debug(False, "Passwords match, hashing...")
     
     hashed_pass, p_salt = hasher.hash_pass(debug, nh_pass=pass_conf)
     #hashed_pass = hasher.hash_pass2(debug=True, nh_pass=pass_conf)
 
     if debug:
-        print(Fore.GREEN + "Unique ID is " + accid)
-        print(Fore.GREEN + "attempting to add account to csv now...")
+        print_debug(False, "Account generation successfull, performing final check.")
 
-    if not csv_handler.new_entry(accid, user_name, hashed_pass, p_salt):
-        print(Fore.RED + "Username already exists!")
-        return False
-    else:
-        return True
+    csv_handler.new_entry(accid, user_name, hashed_pass, p_salt)
+    return True
+

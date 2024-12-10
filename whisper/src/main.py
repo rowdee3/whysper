@@ -3,7 +3,7 @@ import account_handler
 from colorama import Fore, Back, Style, init #type: ignore
 
 init(autoreset=True)
-debug = False
+debug = True
 
 
 def display_title_card():

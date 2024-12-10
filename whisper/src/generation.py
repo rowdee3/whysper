@@ -1,5 +1,6 @@
 import csv
 import csv_handler
+from debug_messages import print_debug
 from os.path import exists
 from os import mkdir
 from colorama import Fore, Style, init #type: ignore
@@ -37,28 +38,45 @@ def generate_csv(debug):
             #We attempt to make the directory whether or not it exists, if it already exists we accept the error and continue as normal.
             try:
                 mkdir("../data/")
-                print(Fore.RED + "data dir NOT FOUND!")
-                print(Fore.GREEN + "data dir made.")
+
+                print_debug(True, "Data directory not found.")
+                print_debug(False, "Data directory created.")
+
             except OSError as e:
                 if debug:
-                    print(Fore.GREEN + "data dir exists.")
+                    print_debug(False, "/data/ exists.")
+
+            try:
+                mkdir('../data/misc/')
+
+                print_debug(True, "Misc directory not found.")
+                print_debug(False, "Misc directory created.")
+
+            except OSError as r:
+                if debug:
+                    print_debug(False, "/data/misc/ exists. ")
 
             #Using os.path.exists we check if the csv file exists, if not  we set file_exits to False, otherwise its True
             file_exists = exists("../data/accounts.csv")
 
             if not file_exists:
-                print(Fore.RED + "accounts.csv NOT FOUND!")
-                print(Fore.GREEN + "creating csv file now...")
+                print_debug(True, "'accounts.csv' has not been found and will be made.")
 
-                csv_handler.create_accounts_csv()
+                try:
+                    csv_handler.create_accounts_csv()
+                except:
+                    print_debug(False + "A Fatal error has occurred whilst creating the CSV.\nPress Any key to close the program.")
+                    input()
+                    exit()
                 
-                print(Fore.GREEN + "accounts.csv successfully created!")
+                if debug:
+                    print_debug(False, "'accounts.csv' created.")
 
                 return True
 
             else:
                 if debug:
-                    print(Fore.GREEN + "accounts.csv exists!")
+                    print_debug(False, "'accounts.csv' exists'")
                 return True
     except:
         print(Fore.RED + "An error has occured during csv generation.")

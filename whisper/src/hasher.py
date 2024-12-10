@@ -3,6 +3,7 @@ import hashlib
 import argon2
 import secrets
 from colorama import Fore, init
+from debug_messages import print_debug
 
 init(autoreset=True)
 
@@ -40,13 +41,13 @@ def salt(debug):
     """
 
     char_set = string.ascii_uppercase + string.ascii_lowercase + string.digits
-    #Using the char_set and secrets standard lib we generate a length of 16 unique random letters and numbers
-    #as is standard by the NIST. 
+    #abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+
     if debug:
-        print(Fore.GREEN + "generating salt now...")
+        print_debug(False, "Generating Salt value now.")
     salt = ''.join(secrets.SystemRandom().choice(char_set) for i in range(16))
     if debug:
-        print(Fore.GREEN + "salt has been generated as " + salt + ".")
+        print_debug(False, "Salt has been generated as " + salt + ".")
 
     return salt
 
@@ -69,6 +70,7 @@ def hash_pass2(debug, nh_pass):
         the hashed equivalent of the password.
 
     """
+    pass
 
 def hash_pass(debug, nh_pass):
     
@@ -90,7 +92,7 @@ def hash_pass(debug, nh_pass):
     """
 
     #iterations
-    iters = 1_000_000
+    iters = 5_000_000
 
     password_salt = salt(debug)
     hpass = hashlib.pbkdf2_hmac('sha512', nh_pass.encode(), password_salt.encode(), iters)
