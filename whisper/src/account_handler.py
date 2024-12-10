@@ -106,8 +106,23 @@ def register_account(debug):
     #hashed_pass = hasher.hash_pass2(debug=True, nh_pass=pass_conf)
 
     if debug:
-        print_debug(False, "Account generation successfull, performing final check.")
+        print_debug(False, "Account generation successful.")
 
     csv_handler.new_entry(accid, user_name, hashed_pass, p_salt)
     return True
 
+def login_to_dashboard():
+
+    """
+    This function allows the user to login to their account and proceeds to start the dashboard.
+
+    Parameters
+    -----------
+    None
+
+    Returns
+    -----------
+    bool
+        whether the logon attempt was successful.
+
+    """
