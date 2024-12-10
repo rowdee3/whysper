@@ -12,7 +12,7 @@ def display_title_card():
     Displays the title card.
     """
 
-    title_card = "Whisper v0.0.1"
+    title_card = "Whisper v0.0.2"
     print(Fore.GREEN + title_card.center(20))
     print(Fore.GREEN + "-------------------")
 
@@ -38,7 +38,8 @@ def login_menu():
                     exit()
 
                 case 1:
-                    print(Fore.RED + "Sorry, that's currently unavaliable :(")
+                    print(Fore.RED + "Sorry, that's currently unavaliable :(\n\n")
+                    display_title_card()
 
                 case 2:
                      if account_handler.register_account(debug):

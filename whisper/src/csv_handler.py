@@ -84,6 +84,11 @@ def new_entry(accid, username, hpass, salt):
         writer.writerow(row)
     return True
 
+def delete_entry_from_csv(args, kwargs):
+
+    #TO-DO
+
+    pass
 
 
  
