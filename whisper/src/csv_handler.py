@@ -55,6 +55,34 @@ def check_if_accid_exists(accid):
         return False
     else:
         return True
+    
+def get_user_hash(debug, user_name):
+    
+    """
+    A function to get the stored hash value from accounts.csv
+
+    Parameters
+    -----------
+    debug : bool
+        allows for outputting debug messages
+
+    user_name : str
+        allows us to locate what hash we want
+
+    Returns
+    ---------
+    hex
+        returns the hex value of the hash.
+    """
+
+    if check_if_username_exists(user_name):
+        
+        with open('../data/accounts.csv', 'r') as file:
+            reader = csv.reader(file)
+            
+            for row in reader:
+                if row[1] == user_name:
+                    return row[2]
 
 def new_entry(accid, username, hpass, salt):
 
@@ -78,13 +106,37 @@ def new_entry(accid, username, hpass, salt):
     bool
         if the file succeeds in creating the new account a True is returned otherwise, False.
     """
-    row = [accid, username, hpass.hex(), salt]
+    row = [accid, username, hpass, salt]
     with open('../data/accounts.csv', 'a') as file:
         writer = csv.writer(file)
         writer.writerow(row)
     return True
 
-def delete_entry_from_csv(args, kwargs):
+def get_salt_from_csv(user_name):
+    """
+    A function to grab the salt value associated with an account.
+
+    Parameters
+    ------------
+    user_name : str
+        the account we want to grab the salt for
+
+    Returns
+    -----------
+    str
+        returns the salt value as a string
+
+    """
+
+    
+    with open('../data/accounts.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if user_name == row[1]:
+                return row[3]
+
+
+def delete_entry_from_csv(*args, **kwargs):
 
     #TO-DO
 

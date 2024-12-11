@@ -37,6 +37,7 @@ def register_account(debug):
         return False
 
     #make a unique account id for this account.
+    #this is dumb but it'll do for now.
     accid_is_unique = False
     while not accid_is_unique:
         accid = "AC00"
@@ -59,7 +60,7 @@ def register_account(debug):
         if csv_handler.check_if_username_exists(user_name):
             print(Fore.RED + "Username already exists!")
         else:
-            username_confirmed = True
+            username_confirmed = False
 
             try:
                 u_input = str(input("@; Are you sure you want " + Fore.BLUE + user_name + Fore.WHITE +" to be your username? (Y/N) "))
@@ -77,6 +78,7 @@ def register_account(debug):
                                 
             except ValueError:
                 print(Fore.RED + "Please enter either Y or N.")
+                continue
 
 
 
@@ -102,8 +104,7 @@ def register_account(debug):
         print_debug(False, "Username confirmed.")
         print_debug(False, "Passwords match, hashing...")
     
-    hashed_pass, p_salt = hasher.hash_pass(debug, nh_pass=pass_conf)
-    #hashed_pass = hasher.hash_pass2(debug=True, nh_pass=pass_conf)
+    hashed_pass, p_salt = hasher.hash_pass(debug, pass_word, True, None)
 
     if debug:
         print_debug(False, "Account generation successful.")
@@ -111,7 +112,7 @@ def register_account(debug):
     csv_handler.new_entry(accid, user_name, hashed_pass, p_salt)
     return True
 
-def login_to_dashboard():
+def login_to_dashboard(debug):
 
     """
     This function allows the user to login to their account and proceeds to start the dashboard.
@@ -124,5 +125,46 @@ def login_to_dashboard():
     -----------
     bool
         whether the logon attempt was successful.
+    
+    user_name : str
+        the username of the account we logged into 
 
     """
+
+    while True:
+        
+        #Check if account exists before carrying on.
+        username_confirmed = False
+        while not username_confirmed:
+            u_input = input("@; Please enter your username: ")
+
+            if csv_handler.check_if_username_exists(u_input) != True:
+                print(Fore.RED + "Account not found!")
+                return None
+            else:
+                user_name = u_input
+                username_confirmed = True
+
+        u_input = input("@; Please enter your password: ")
+        password = u_input
+
+        #Grab the salt value used in the account.
+        salt = csv_handler.get_salt_from_csv(user_name)
+
+        if debug:
+            print_debug(False, f"Grabbed {salt} from accounts.csv.")
+
+        #Generate a key based on the user given input and compare it to the stored hash value.
+        stored_pass = csv_handler.get_user_hash(debug, user_name)
+        new_pass = hasher.hash_pass(debug, password, False, salt)
+
+        if debug:
+            print_debug(False, f"Old Hash value: {stored_pass}")
+            print_debug(False, f"New Hash value: {new_pass}")
+
+        try:
+            assert new_pass == stored_pass
+            print(Fore.GREEN + f"Logged in as {user_name}.")
+            return user_name
+        except AssertionError:
+            print(Fore.RED + "Passwords do not match!")

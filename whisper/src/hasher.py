@@ -2,6 +2,7 @@ import string
 import hashlib
 import argon2
 import secrets
+import base64
 from colorama import Fore, init
 from debug_messages import print_debug
 
@@ -40,39 +41,16 @@ def salt(debug):
 
     """
 
-    char_set = string.ascii_uppercase + string.ascii_lowercase + string.digits
-    #abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-
     if debug:
         print_debug(False, "Generating Salt value now.")
-    salt = ''.join(secrets.SystemRandom().choice(char_set) for i in range(16))
+    salt = secrets.token_hex(32)
     if debug:
         print_debug(False, "Salt has been generated as " + salt + ".")
 
     return salt
 
 
-def hash_pass2(debug, nh_pass):
-
-    """
-    Hashes the given password using argon2.cffi .
-
-    Parameters
-    -----------
-    debug : bool
-        outputs what the program is currently doing. WARNING! MAY REVEAL DATA IF DEBUG IS ENABLED.
-    nh_pass : str
-        the non-hashed password.
-
-    Returns:
-    -----------
-    h_pass : obj
-        the hashed equivalent of the password.
-
-    """
-    pass
-
-def hash_pass(debug, nh_pass):
+def hash_pass(debug, nh_pass, salt_needed, password_salt):
     
     """
     Hashes the given password using standard hashlib.
@@ -83,22 +61,25 @@ def hash_pass(debug, nh_pass):
         outputs what the program is currently doing. WARNING! MAY REVEAL DATA IF DEBUG IS ENABLED.
     nh_pass : str
         the non-hashed password.
+    salt_needed : bool
+        whether or not we need to generate a new salt.
+    salt : str
+        a random assortment of letters and numbers (32 bytes)
 
     Returns:
     -----------
-    h_pass : obj
+    h_pass : hex
         the hashed equivalent of the password.
 
     """
 
-    #iterations
-    iters = 5_000_000
-
-    password_salt = salt(debug)
-    hpass = hashlib.pbkdf2_hmac('sha512', nh_pass.encode(), password_salt.encode(), iters)
-
-    return hpass, password_salt
-
+    if salt_needed:
+        password_salt = salt(debug)
+        hpass = hashlib.pbkdf2_hmac('sha512', nh_pass.encode('utf-8'), password_salt.encode('utf-8'), iterations=10_000_000, dklen=128).hex()
+        return hpass, password_salt
+    else:
+        hpass = hashlib.pbkdf2_hmac('sha512', nh_pass.encode('utf-8'), password_salt.encode('utf-8'), iterations=10_000_000, dklen=128).hex()
+        return hpass
 
 
     
