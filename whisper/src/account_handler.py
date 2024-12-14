@@ -156,6 +156,8 @@ def login_to_dashboard(debug):
 
         #Generate a key based on the user given input and compare it to the stored hash value.
         stored_pass = csv_handler.get_user_hash(debug, user_name)
+        if debug:
+            print_debug(False, "Generating new hash....")
         new_pass = hasher.hash_pass(debug, password, False, salt)
 
         if debug:

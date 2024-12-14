@@ -4,7 +4,7 @@ from debug_messages import print_debug
 from colorama import Fore, Back, Style, init #type: ignore
 
 init(autoreset=True)
-debug = False
+debug = True
 
 
 def display_title_card():
@@ -26,18 +26,15 @@ def login_menu():
     """
 
     user_name = 'Guest'
+    menu_string = "1) Login\n2) Create Account\n0) Exit\n"
 
     while True:
 
-        menu_string = "1) Login\n2) Create Account\n0) Exit"
         print(Fore.WHITE + menu_string)
 
-        if user_name != 'Guest':
-            u_input = int(input(Fore.CYAN + f"{user_name}" + Fore.WHITE + "@; " ))
-        else:
-            u_input = int(input(f"{user_name}@; "))
-
         try:
+            u_input = int(input(f"{user_name}@" + Fore.GREEN + "whisper" + Fore.WHITE + "; "))
+
             if u_input == 0:
                 exit()
             elif u_input == 2:
@@ -52,12 +49,49 @@ def login_menu():
                 if var == None:
                     display_title_card()
                 else:
-                    user_name = var
-                    display_title_card()
+                    print("")
+                    dashboard(var)
             else:
                 print(Fore.RED + "Please enter an available option!")
         except ValueError as err:
             print(Fore.RED + "Please enter an available option!")
+
+
+def dashboard(user_name):
+    """
+    Main dashboard which allows user to connect to a server. etc etc
+
+    Parameters
+    ------------
+    user_name : str
+        the current user who is logged in.
+
+    Returns
+    ---------
+    None
+
+    """
+
+    display_title_card()
+
+    menu_string = "1) Connect\n2) Logout\n0) Exit\n"
+
+    while True:
+
+        print(menu_string)        
+
+        try:
+            u_input = int(input(Fore.CYAN + f"{user_name}" + Fore.WHITE + "@" + Fore.GREEN + "whisper" + Fore.WHITE + "; "))
+
+            if u_input == 0:
+                exit()
+            elif u_input == 2:
+                login_menu()
+            elif u_input == 1:
+                print(Fore.RED + "Sorry, unavailable right now! :()")
+        except ValueError as e:
+            print("Please enter an available option!")
+
 
 
 def main():
