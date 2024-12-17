@@ -88,9 +88,11 @@ def dashboard(user_name):
             elif u_input == 2:
                 login_menu()
             elif u_input == 1:
-                print(Fore.RED + "Sorry, unavailable right now! :()")
+                print(Fore.RED + "Sorry, unavailable right now! :(")
+                display_title_card()
         except ValueError as e:
-            print("Please enter an available option!")
+            print(Fore.RED + "Please enter an available option!\n")
+            display_title_card()
 
 
 
